@@ -9,7 +9,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def home():
     
-    df = pd.read_csv('static/data.csv')
+    df = pd.read_csv('static/leadconvert.csv')
     json_data = df.to_json(orient='records')
     
     data_to_dict = json.loads(json_data)[0]
@@ -22,7 +22,7 @@ def home():
 @app.route('/<opp_id>/<type>', methods=['GET', 'POST'])
 def api(opp_id, type):
     
-    df = pd.read_csv('static/data.csv')
+    df = pd.read_csv('static/leadconvert.csv')
     data = df.to_json(orient='records')
     
     return render_template('index.html', 
@@ -34,7 +34,7 @@ def api(opp_id, type):
 @app.route('/get_data', methods=['GET'])
 def send_data():
     
-    csv_file_path = 'static/data.csv'
+    csv_file_path = 'static/leadconvert.csv'
     data = []
     
     with open(csv_file_path, 'r') as csv_file:
