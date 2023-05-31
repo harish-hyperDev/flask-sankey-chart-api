@@ -88,10 +88,6 @@ d3.sankey = function () {
                 target = link.target;
             if (typeof source === "number") source = link.source = nodes[link.source];
             if (typeof target === "number") target = link.target = nodes[link.target];
-            console.log("what is link : ", link)
-            console.log("source error : ", source)
-            // console.log("push link : ", link)
-            // console.log("push link : ", link)
 
             source.sourceLinks.push(link);
             target.targetLinks.push(link);
@@ -300,15 +296,15 @@ d3.sankey = function () {
 
 function drawSankey(graph) {
     var nodeMap = {};
-    graph.nodes.forEach(function(x) { nodeMap[x.name] = x; });
-    graph.links = graph.links.map(function(x) {
-      return {
-        source: nodeMap[x.source],
-        target: nodeMap[x.target],
-        value: x.value
-      };
+    graph.nodes.forEach(function (x) { nodeMap[x.name] = x; });
+    graph.links = graph.links.map(function (x) {
+        return {
+            source: nodeMap[x.source],
+            target: nodeMap[x.target],
+            value: x.value
+        };
     });
-    
+
     sankey
         .nodes(graph.nodes)
         .links(graph.links)
@@ -377,7 +373,7 @@ function drawSankey(graph) {
 
 var margin = { top: 10, right: 50, bottom: 10, left: 50 },
     width = window.innerWidth - margin.left - margin.right,
-    height = window.innerHeight - margin.top - margin.bottom;
+    height = 1300 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#chart").append("svg")
@@ -401,45 +397,170 @@ var sankey = d3.sankey()
 
 // Constructs a new Sankey generator with the default settings.
 
-let graph = {
-    "nodes": [
-        { "name": "node5" },
-        { "name": "node9" },
-        { "name": "node10" },
-        { "name": "node12" },
-        { "name": "node15" }
-    ],
-    "links": [
-        { "source": 0, "target": 2, "value": 2 },
-        { "source": 1, "target": 2, "value": 2 },
-        { "source": 1, "target": 3, "value": 2 },
-        { "source": 0, "target": 4, "value": 2 },
-        { "source": 2, "target": 3, "value": 2 },
-        { "source": 2, "target": 4, "value": 2 },
-        { "source": 3, "target": 4, "value": 4 }
-    ]
+const onlyUnique = (value, index, array) => {
+    return array.indexOf(value) === index;
 }
 
-let dummyData = {
-    "links": [
+const getLinks = (arr) => {
+    // console.log("resp ", arr)
+    return arr.map(v => {
+        // console.log("every v : ", v['Created Date'], "and : ", v['Converted Date'])
 
-
-        { "source": "2/2/2023", "target": "7/2/2023", "value": 5 },
-        { "source": "2/2/2023", "target": "7/2/2023", "value": 5 },
-        // { "source": "7/2/2023", "target": "31/03/2023", "value": "5.0" },
-
-
-    ],
-    "nodes": [
-
-        { "name": "2/2/2023" },
-        { "name": "7/2/2023" },
-        { "name": "31/03/2023" }
-
-    ]
+        return {
+            "source": v['Created Date'],
+            "target": v['Converted Date'],
+            "value": "7.0"
+        }
+    })
 }
 
-drawSankey(dummyData)
+const checkNodesAndLinks = (arr) => {
+
+}
+
+const getNodes = (arr) => {
+    return arr.map(v => { return { "name": v } })
+}
+
+fetch('/get_data').then(res => res.json()).then(responseData => {
+    let graph = {
+        "links": [
+            { "source": "2/2/2023", "target": "7/2/2023", "value": "5.0" },
+            { "source": "2/2/2023", "target": "7/2/2023", "value": "5.0" },
+            { "source": "7/2/2023", "target": "31/03/2023", "value": " 5.0" },
+        ],
+        "nodes": [
+
+            { "name": "2/2/2023" },
+            { "name": "7/2/2023" },
+            { "name": "31/03/2023" }
+
+        ]
+    }
+
+    let dummyData = {
+        "links": [
+            { "source": "2/2/2023", "target": "7/2/2023", "value": "5.0" },
+            { "source": "2/2/2023", "target": "7/2/2023", "value": "5.0" },
+            { "source": "7/2/2023", "target": "11/1/2022", "value": "5.0" },
+            { "source": "28/10/2022", "target": "11/5/2021", "value": "5.0" },
+        ],
+        "nodes": [
+            { "name": "28/10/2022" },
+            { "name": "12/9/2022" },
+            { "name": "2/2/2023" },
+            { "name": "11/1/2022" },
+            { "name": "21/01/2022" },
+            { "name": "21/05/2021" },
+            { "name": "2/3/2022" },
+            { "name": "11/5/2021" },
+            { "name": "7/10/2022" },
+            { "name": "7/9/2021" },
+            { "name": "11/5/2022" },
+            { "name": "25/05/2022" },
+            { "name": "14/03/2023" },
+            { "name": "9/8/2022" },
+            { "name": "8/9/2022" },
+            { "name": "18/07/2022" },
+            { "name": "30/10/2022" },
+            { "name": "7/2/2023" },
+            { "name": "23/03/2022" },
+            { "name": "10/11/2022" },
+            { "name": "30/08/2022" },
+             /* { "name": "1/9/2022" },
+            { "name": "23/08/2021" },
+            { "name": "14/06/2017" },
+            { "name": "26/10/2021" },
+            { "name": "24/01/2022" },
+            { "name": "17/10/2022" },
+            { "name": "15/06/2021" },
+            { "name": "5/8/2022" },
+            { "name": "22/06/2022" },
+            { "name": "18/05/2022" },
+            { "name": "4/4/2023" },
+            { "name": "7/2/2023" },
+            { "name": "14/07/2022" },
+            { "name": "15/11/2022" },
+            { "name": "2/5/2022" },
+            { "name": "2/11/2022" },
+            { "name": "17/08/2022" },
+            { "name": "6/9/2022" },
+            { "name": "8/11/2018" },
+            { "name": "17/02/2023" },
+            { "name": "18/04/2023" },
+            { "name": "30/10/2020" },
+            { "name": "21/06/2022" },
+            { "name": "24/05/2023" },
+            { "name": "14/04/2023" },
+            { "name": "2/2/2023" },
+            { "name": "7/2/2023" },
+            { "name": "7/2/2023" },
+            { "name": "21/04/2023" },
+            { "name": "17/03/2023" },
+            { "name": "24/05/2021" },
+            { "name": "16/05/2023" },
+            { "name": "19/04/2023" },
+            { "name": "3/5/2023" },
+            { "name": "3/3/2023" },
+            { "name": "8/2/2023" },
+            { "name": "2/2/2023" },
+            { "name": "15/05/2023" },
+            { "name": "10/2/2023" },
+            { "name": "10/3/2023" },
+            { "name": "21/02/2023" },
+            { "name": "21/02/2023" },
+            { "name": "3/2/2023" },
+            { "name": "15/02/2023" },
+            { "name": "9/2/2023" },
+            { "name": "25/01/2022" },
+            { "name": "26/03/2023" },
+            { "name": "8/2/2023" },
+            { "name": "11/5/2023" },
+            { "name": "3/5/2023" },
+            { "name": "14/04/2023" },
+            { "name": "22/02/2023" },
+            { "name": "10/2/2023" },
+            { "name": "15/05/2023" },
+            { "name": "2/5/2023" },
+            { "name": "7/2/2023" },
+            { "name": "19/04/2023" },
+            { "name": "26/03/2023" },
+            { "name": "9/5/2023" },
+            { "name": "18/04/2023" },
+            { "name": "3/2/2023" },
+            { "name": "14/02/2023" },
+            { "name": "10/2/2023" },
+            { "name": "25/05/2023" } */ 
 
 
-// });
+        ]
+    }
+
+    let leadCreatedUniqueDates = responseData.map((o, i) => o['Created Date']).filter(onlyUnique)
+    let oppCreatedUniqueDates = responseData.map((o, i) => o['Converted Date']).filter(onlyUnique)
+    let oppClosedUniqueDates = responseData.map((o, i) => o['Oppt Close Date']).filter(onlyUnique).filter(v => v != "")
+
+    // console.log('opp close : ', oppClosedUniqueDates)
+
+    let leadNodes = {
+        "links": getLinks(responseData),
+
+        "nodes": [  ...getNodes(leadCreatedUniqueDates),
+                    ...getNodes(oppCreatedUniqueDates),
+                // ...getNodes(oppClosedUniqueDates)
+        ].map(k => k['name']).filter(onlyUnique).map(v => { return { "name": v } })
+    }
+
+    console.log("Freaking Main Leads : ", leadNodes)
+    console.log("Default Dummy Data : ", dummyData)
+    console.log("Default Graph Data : ", graph)
+
+    console.log("dup nodes : ", leadNodes['nodes'])
+
+    // drawSankey(graph)
+    drawSankey(dummyData)
+    // drawSankey(leadNodes)
+
+
+
+});
