@@ -1,4 +1,5 @@
 let nodeValue = "10.0"
+
 d3.sankey = function () {
     var sankey = {},
         nodeWidth = 24,
@@ -408,28 +409,20 @@ const onlyUnique = (value, index, array) => {
 const getLinks = (arr, source, target) => {
 
     return arr.map(v => {
-
-        
-        // if(v[source] != v[target] && v[target] != '') {
-            return {
-                "source": source == "Converted Date" ? v[source].replaceAll("/", "-") : ( source == "Oppt Close Date" ? v[source].replaceAll("/", ".") : v[source]),
-                "target": target == "Converted Date" ? v[target].replaceAll("/", "-") : ( target == "Oppt Close Date" ? v[target].replaceAll("/", ".") : v[target]),
-                "value": nodeValue
-            }
-        // } 
-
-        
-        
-       
+        return {
+            "source": source == "Converted Date" ? v[source].replaceAll("/", "-") : (source == "Oppt Close Date" ? v[source].replaceAll("/", ".") : v[source]),
+            "target": target == "Converted Date" ? v[target].replaceAll("/", "-") : (target == "Oppt Close Date" ? v[target].replaceAll("/", ".") : v[target]),
+            "value": nodeValue
+        }
     })
 }
 
 
 const getNodes = (arr, key) => {
-    
+
     // console.log("keyyyyy - ", key)
 
-    if(key === "Converted Date")
+    if (key === "Converted Date")
         return arr.map(v => { /* console.log("key - ", key, " the converted dates : ", v.replaceAll("/","-")); */ return { "name": v.replaceAll("/", "-") } })
     else if (key == "Oppt Close Date")
         return arr.map(v => { /* console.log("key - ", key, " CLOSING date : ", v.replaceAll("/",".")); */ return { "name": v.replaceAll("/", ".") } })
@@ -468,21 +461,23 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
     // console.log('opp close : ', oppClosedUniqueDates)
 
     let leadNodes = {
-        "links": [  ...getLinks(responseData, "Created Date", "Converted Date"), 
-                    ...getLinks(responseData, "Converted Date", "Oppt Close Date")
-                ].filter(v => v != null),
+        "links": [...getLinks(responseData, "Created Date", "Converted Date"),
+        ...getLinks(responseData, "Converted Date", "Oppt Close Date")
+        ].filter(v => v != null),
 
         "nodes": [
             ...getNodes(leadCreatedUniqueDates, "Created Date"),
             ...getNodes(oppCreatedUniqueDates, "Converted Date"),
             ...getNodes(oppClosedUniqueDates, "Oppt Close Date")
-        ].map(k => k['name']).filter(onlyUnique).map(v => { return { "name": v } })
+        ].map(k => k['name'])
+        .filter(onlyUnique)
+        .map(v => { return { "name": v } })
     }
 
     let miniLeads = {
-                        "links": leadNodes['links'],  //.slice(0,65),
-                        "nodes": leadNodes['nodes']
-                    }
+        "links": leadNodes['links'],  //.slice(0,65),
+        "nodes": leadNodes['nodes']
+    }
 
     console.log("Freaking Main Leads : ", leadNodes)
     console.log("Default Graph Data : ", graph)
