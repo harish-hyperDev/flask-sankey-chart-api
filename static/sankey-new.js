@@ -1,3 +1,5 @@
+let nodeValue = "10.0"
+
 d3.sankey = function () {
     var sankey = {},
         nodeWidth = 24,
@@ -365,7 +367,7 @@ function drawSankey(graph) {
         .style("stroke", function (d) { return d3.rgb(d.color).darker(2); })
         // Add hover text
         .append("title")
-        .text(function (d) { return d.name + "\n" + "There is " + d.value + " stuff in this node"; });
+        .text(function (d) { return d.name + "\n" + "There is/are " + d.value / nodeValue + " record(s) in this node"; });
 
     // add in the title for the nodes
     node
@@ -396,7 +398,6 @@ function drawSankey(graph) {
 
 
 //// Helper functions
-
 const onlyUnique = (value, index, array) => {
     return array.indexOf(value) === index;
 }
@@ -404,21 +405,24 @@ const onlyUnique = (value, index, array) => {
 const getLinks = (arr, source, target) => {
 
     return arr.map(v => {
-
-        if(v[source] != v[target] && v[target] != '') 
-            return {
-                "source": v[source],
-                "target": v[target],
-                "value": "7.0"
-            }
+        return {
+            "source": source == "Converted Date" ? v[source].replaceAll("/", "-") : (source == "Oppt Close Date" ? v[source].replaceAll("/", ".") : v[source]),
+            "target": target == "Converted Date" ? v[target].replaceAll("/", "-") : (target == "Oppt Close Date" ? v[target].replaceAll("/", ".") : v[target]),
+            "value": nodeValue
+        }
     })
 }
 
-const checkNodesAndLinks = (arr) => {
-}
+const getNodes = (arr, key) => {
 
-const getNodes = (arr) => {
-    return arr.map(v => { return { "name": v } })
+    // console.log("keyyyyy - ", key)
+
+    if (key === "Converted Date")
+        return arr.map(v => { /* console.log("key - ", key, " the converted dates : ", v.replaceAll("/","-")); */ return { "name": v.replaceAll("/", "-") } })
+    else if (key == "Oppt Close Date")
+        return arr.map(v => { /* console.log("key - ", key, " CLOSING date : ", v.replaceAll("/",".")); */ return { "name": v.replaceAll("/", ".") } })
+    else
+        return arr.map(v => { return { "name": v } })
 }
 //// End of Helper functions 
 
@@ -433,23 +437,23 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
 
 
     let leadNodes = {
-        "links": [  ...getLinks(responseData, "Created Date", "Converted Date"), 
-                    ...getLinks(responseData, "Converted Date", "Oppt Close Date")
-                ].filter(v => v != null),
+        "links": [...getLinks(responseData, "Created Date", "Converted Date"),
+        ...getLinks(responseData, "Converted Date", "Oppt Close Date")
+        ].filter(v => v != null),
 
         "nodes": [
-            ...getNodes(leadCreatedUniqueDates),
-            ...getNodes(oppCreatedUniqueDates),
-            ...getNodes(oppClosedUniqueDates)
+            ...getNodes(leadCreatedUniqueDates, "Created Date"),
+            ...getNodes(oppCreatedUniqueDates, "Converted Date"),
+            ...getNodes(oppClosedUniqueDates, "Oppt Close Date")
         ].map(k => k['name'])
-        .filter(onlyUnique)
-        .map(v => { return { "name": v } })
+            .filter(onlyUnique)
+            .map(v => { return { "name": v } })
     }
 
     let miniLeads = {
-                        "links": leadNodes['links'],  
-                        "nodes": leadNodes['nodes']
-                    }
+        "links": leadNodes['links'],
+        "nodes": leadNodes['nodes']
+    }
 
     // Generate sankey chart
     drawSankey(miniLeads)
