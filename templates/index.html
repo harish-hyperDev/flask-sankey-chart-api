@@ -2,32 +2,13 @@
 <html>
 
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap" rel="stylesheet">
-
-    <!-- Importing colors for circles -->
-    <script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-
-
-    
-    <!-- D3 and Sankey -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script> -->
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/sankey.js"></script> -->
-
-
-    <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
-    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/d3-time-format@4"></script>
 
     <style>
+        * {
+            font-family: 'Open Sans';
+        }
         .link {
             stroke: #d7d7d7;
             fill: transparent;
@@ -43,14 +24,7 @@
 <body>
     <div id="chart"></div>
 </body>
-<script>
-    let fid = 0;
-    if ("{{ id }}" || 0) {
-        fid = "{{ id }}" || 0
-    }
 
-</script>
-<!-- <script src="{{url_for('static', filename='sankey.js')}}"></script> -->
 <script src="{{url_for('static', filename='sankey-new.js')}}"></script>
 
 
