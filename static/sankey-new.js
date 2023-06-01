@@ -418,15 +418,16 @@ const getNodes = (arr, key) => {
     // console.log("keyyyyy - ", key)
 
     if (key === "Converted Date")
-        return arr.map(v => { /* console.log("key - ", key, " the converted dates : ", v.replaceAll("/","-")); */ return { "name": v.replaceAll("/", "-") } })
+        return arr.map(v => {  return { "name": v.replaceAll("/", "-") } })
     else if (key == "Oppt Close Date")
-        return arr.map(v => { /* console.log("key - ", key, " CLOSING date : ", v.replaceAll("/",".")); */ return { "name": v.replaceAll("/", ".") } })
+        return arr.map(v => { return { "name": v.replaceAll("/", ".") } })
     else
         return arr.map(v => { return { "name": v } })
 }
 //// End of Helper functions 
 
-// Load Data
+
+// Fetching Data from Flask API
 
 fetch('/get_data').then(res => res.json()).then(responseData => {
 
@@ -437,8 +438,9 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
 
 
     let leadNodes = {
-        "links": [...getLinks(responseData, "Created Date", "Converted Date"),
-        ...getLinks(responseData, "Converted Date", "Oppt Close Date")
+        "links": [
+            ...getLinks(responseData, "Created Date", "Converted Date"),
+            ...getLinks(responseData, "Converted Date", "Oppt Close Date")
         ].filter(v => v != null),
 
         "nodes": [
