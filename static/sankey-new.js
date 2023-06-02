@@ -277,10 +277,12 @@ d3.sankey = function () {
         });
 
         function ascendingSourceDepth(a, b) {
+            // console.log("ascending source depth : ", a.source.y - b.source.y)
             return a.source.y - b.source.y;
         }
 
         function ascendingTargetDepth(a, b) {
+            // console.log("ascending target depth : ", )
             return a.target.y - b.target.y;
         }
     }
@@ -344,7 +346,8 @@ function drawSankey(graph) {
         .attr("class", "link")
         .attr("d", sankey.link())
         .style("stroke-width", function (d) { return Math.max(1, d.dy); })
-        .sort(function (a, b) { return b.dy - a.dy; });
+        .sort(function (a, b) { return b.dy - a.dy; });          // uncomment this
+
 
     // add in the nodes
     var node = svg.append("g")
@@ -423,9 +426,9 @@ const getNodes = (arr, key) => {
     // console.log("keyyyyy - ", key)
 
     if (key === "Converted Date")
-        return arr.map(v => { /* console.log("key - ", key, " the converted dates : ", v.replaceAll("/","-")); */ return { "name": v.replaceAll("/", "-") } })
+        return arr.map(v => { return { "name": v.replaceAll("/", "-") } })
     else if (key == "Oppt Close Date")
-        return arr.map(v => { /* console.log("key - ", key, " CLOSING date : ", v.replaceAll("/",".")); */ return { "name": v.replaceAll("/", ".") } })
+        return arr.map(v => { return { "name": v.replaceAll("/", ".") } })
     else
         return arr.map(v => { return { "name": v } })
 }
@@ -436,21 +439,32 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
 
     let graph = {
         "links": [
-            { "source": "7/2/2023", "target": "7.2.2023", "value": "5.0" },
-            { "source": "7/2/2023", "target": "7.2.2023", "value": "5.0" },
-            { "source": "31/2/2023", "target": "31-03-2023", "value": " 5.0" },
-            { "source": "31/2/2023", "target": "31-03-2023", "value": " 5.0" },
-            { "source": "7.2.2023", "target": "31/03/2023", "value": " 5.0" },
-        ],
+            { "source": "2023/4/5", "target": "2023/6/2", "value": "5.0" },
+            { "source": "2023/2/20", "target": "2023/6/2", "value": "5.0" },
+            { "source": "2021/10/21", "target": "2023/6/2", "value": " 5.0" },
+            { "source": "2022/03/10", "target": "2023/6/2", "value": " 5.0" },
+            { "source": "2023/2/20", "target": "2023/6/2", "value": " 5.0" },
+        ].sort((a, b) => new Date(a.source) - new Date(b.source)),
+        
+        /*.sort((a, b) => {
+            if (a.source < b.source) {
+                console.log("less : ", a.source)
+                return -1;
+            }
+            if (a.source > b.source) {
+                console.log("great : ", a.source)
+                return 1;
+            }
+            return 0;
+        }), */
+        
         "nodes": [
-
-            { "name": "2/2/2023" },
-            { "name": "7/2/2023" },
-            { "name": "7.2.2023" },
-            { "name": "31/03/2023" },
-            { "name": "31-03-2023" },
-            { "name": "31/2/2023" }
-
+            { "name": "2023/2/20" },
+            { "name": "2023/4/5" },
+            { "name": "2023/1/10" },
+            { "name": "2022/03/10" },
+            { "name": "2021/10/21" },
+            { "name": "2023/6/2" },
         ]
     }
 
@@ -458,20 +472,28 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
     let oppCreatedUniqueDates = responseData.map((o, i) => o['Converted Date']).filter(onlyUnique)
     let oppClosedUniqueDates = responseData.map((o, i) => o['Oppt Close Date']).filter(onlyUnique).filter(v => v != "")
 
+    let leadStatus = responseData.map((o, i) => o["Lead Status"]).filter(onlyUnique).filter(v => v != "")
+
     // console.log('opp close : ', oppClosedUniqueDates)
 
+    // console.log("test : ", getLinks(responseData, "Created Date", "Converted Date"))
+
+    let firstLinks = getLinks(responseData, "Created Date", "Converted Date") //.sort((a, b) => new Date(a.source) - new Date(b.source))
+    let secondLinks = getLinks(responseData, "Converted Date", "Oppt Close Date")
     let leadNodes = {
-        "links": [...getLinks(responseData, "Created Date", "Converted Date"),
-        ...getLinks(responseData, "Converted Date", "Oppt Close Date")
+        "links": [  ...firstLinks,
+                    ...secondLinks
         ].filter(v => v != null),
 
         "nodes": [
             ...getNodes(leadCreatedUniqueDates, "Created Date"),
             ...getNodes(oppCreatedUniqueDates, "Converted Date"),
-            ...getNodes(oppClosedUniqueDates, "Oppt Close Date")
+            ...getNodes(oppClosedUniqueDates, "Oppt Close Date"),
+
+            ...getNodes(leadStatus, "Lead Status")
         ].map(k => k['name'])
-        .filter(onlyUnique)
-        .map(v => { return { "name": v } })
+            .filter(onlyUnique)
+            .map(v => { return { "name": v } })
     }
 
     let miniLeads = {
@@ -481,6 +503,7 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
 
     console.log("Freaking Main Leads : ", leadNodes)
     console.log("Default Graph Data : ", graph)
+    console.log("First links : ", firstLinks)
 
     console.log("dup nodes : ", leadNodes['nodes'])
 
