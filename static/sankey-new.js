@@ -412,9 +412,33 @@ const onlyUnique = (value, index, array) => {
 const getLinks = (arr, source, target) => {
 
     return arr.map(v => {
+        let s,t
+
+        // For source
+        // if(source === "Converted Date") {
+        //     s = v[source].replaceAll("/", "-")
+        // } else if (source === "Oppt Close Date") {
+        //     s = v[source].replaceAll("/", ".")
+        // } else {
+        //     s = v[source]
+        // }
+
+        // For target
+
         return {
-            "source": source == "Converted Date" ? v[source].replaceAll("/", "-") : (source == "Oppt Close Date" ? v[source].replaceAll("/", ".") : v[source]),
-            "target": target == "Converted Date" ? v[target].replaceAll("/", "-") : (target == "Oppt Close Date" ? v[target].replaceAll("/", ".") : v[target]),
+            "source": source == "Converted Date" 
+                                ? v[source].replaceAll("/", "-") 
+                                : (source == "Oppt Close Date" 
+                                    ? v[source].replaceAll("/", ".") 
+                                    : v[source]
+                                ),
+
+            "target": target == "Converted Date" 
+                                ? v[target].replaceAll("/", "-") 
+                                : (target == "Oppt Close Date" 
+                                    ? v[target].replaceAll("/", ".") 
+                                    : v[target]
+                                ),
             "value": nodeValue
         }
     })
@@ -457,7 +481,7 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
             }
             return 0;
         }), */
-        
+
         "nodes": [
             { "name": "2023/2/20" },
             { "name": "2023/4/5" },
@@ -478,11 +502,14 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
 
     // console.log("test : ", getLinks(responseData, "Created Date", "Converted Date"))
 
-    let firstLinks = getLinks(responseData, "Created Date", "Converted Date") //.sort((a, b) => new Date(a.source) - new Date(b.source))
-    let secondLinks = getLinks(responseData, "Converted Date", "Oppt Close Date")
+    let leadStartedToLeadStatus = getLinks(responseData, "Created Date", "Lead Status") //.sort((a, b) => new Date(a.source) - new Date(b.source))
+    let leadStatusToOppCreated = getLinks(responseData, "Lead Status", "Converted Date")
+    let oppCreatedToOppClosed = getLinks(responseData, "Converted Date", "Oppt Close Date")
+
     let leadNodes = {
-        "links": [  ...firstLinks,
-                    ...secondLinks
+        "links": [  ...leadStartedToLeadStatus,
+                    ...leadStatusToOppCreated,
+                    ...oppCreatedToOppClosed
         ].filter(v => v != null),
 
         "nodes": [
@@ -503,7 +530,7 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
 
     console.log("Freaking Main Leads : ", leadNodes)
     console.log("Default Graph Data : ", graph)
-    console.log("First links : ", firstLinks)
+    console.log("First links : ", leadStartedToLeadStatus)
 
     console.log("dup nodes : ", leadNodes['nodes'])
 
