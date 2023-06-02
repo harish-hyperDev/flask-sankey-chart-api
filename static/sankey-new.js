@@ -352,7 +352,7 @@ function drawSankey(graph, arrData) {
         .append("title")
         .attr("class", "nodes")
         .text(function(d) { 
-            let s = d['source']['name']
+            /* let s = d['source']['name']
             let t = d['target']['name']
 
             // console.log("s, t : ", s, ", ", t)
@@ -362,8 +362,9 @@ function drawSankey(graph, arrData) {
                                 if((a['Created Date'] === s) && (a['Converted Date'] === t)) {
                                     console.log(a)
                                 }
-                            })
+                            }) */
             // console.log(sd)
+            return d.source.name + " → " + d.target.name + "\n" + "There is/are " + d.value / nodeValue + " record(s) in this link"
          })
 
     // add in the nodes
@@ -388,7 +389,7 @@ function drawSankey(graph, arrData) {
         .style("stroke", function (d) { return d3.rgb(d.color).darker(2); })
         // Add hover text
         .append("title")
-        .text(function (d) { return d.name + "\n" + "There are " + d.value / nodeValue + " stuffs in this node"; });
+        .text(function (d) { return d.name + "\n" + "There is/are " + d.value / nodeValue + " record(s) in this node"; });
 
     // add in the title for the nodes
     node
