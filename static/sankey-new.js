@@ -3,7 +3,7 @@ let nodeValue = "15.0"
 d3.sankey = function () {
     var sankey = {},
         nodeWidth = 24,
-        nodePadding = 8,
+        nodePadding = 8,        // was 8
         size = [1, 1],
         nodes = [],
         links = [];
@@ -296,7 +296,7 @@ d3.sankey = function () {
     return sankey;
 };
 
-function drawSankey(graph) {
+function drawSankey(graph, arrData) {
 
     var margin = { top: 10, right: 50, bottom: 50, left: 50 },
         width = window.innerWidth - margin.left - margin.right,
@@ -317,7 +317,7 @@ function drawSankey(graph) {
     // Set the sankey diagram properties
     var sankey = d3.sankey()
         .nodeWidth(36)
-        .nodePadding(10)
+        .nodePadding(9)     // was 10
         .size([width, height]);
 
     var nodeMap = {};
@@ -345,6 +345,23 @@ function drawSankey(graph) {
         .attr("d", sankey.link())
         .style("stroke-width", function (d) { return Math.max(1, d.dy); })
         .sort(function (a, b) { return b.dy - a.dy; });
+    link
+        .append("title")
+        .text(function(d) { 
+            let s = d['source']['name']
+            let t = d['target']['name']
+
+            // console.log("s, t : ", s, ", ", t)
+            console.log(d)
+
+            let sd = arrData.map(a => {
+                                if((a['Created Date'] === s) && (a['Converted Date'] === t)) {
+                                    console.log(a)
+                                }
+                            })
+            // console.log(sd)
+
+         })
 
     // add in the nodes
     var node = svg.append("g")
@@ -361,6 +378,7 @@ function drawSankey(graph) {
     // add the rectangles for the nodes
     node
         .append("rect")
+        .attr("class", "nodes")
         .attr("height", function (d) { return d.dy; })
         .attr("width", sankey.nodeWidth())
         .style("fill", function (d) { return d.color = color(d.name.replace(/ .*/, "")); })
@@ -372,6 +390,7 @@ function drawSankey(graph) {
     // add in the title for the nodes
     node
         .append("text")
+        .attr("class", "nodes")
         .attr("x", -6)
         .attr("y", function (d) { return d.dy / 2; })
         .attr("dy", ".35em")
@@ -380,6 +399,7 @@ function drawSankey(graph) {
         .text(function (d) { return d.name; })
         .filter(function (d) { return d.x < width / 2; })
         .attr("x", 6 + sankey.nodeWidth())
+        // .attr("x", sankey.nodeWidth() - 40)
         .attr("text-anchor", "start");
 
     // the function for moving the nodes
@@ -463,5 +483,5 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
     }
 
     // Generate sankey chart
-    drawSankey(miniLeads)
+    drawSankey(miniLeads, responseData)
 });
