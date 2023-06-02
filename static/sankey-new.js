@@ -298,7 +298,7 @@ d3.sankey = function () {
     return sankey;
 };
 
-function drawSankey(graph) {
+function drawSankey(graph, arrData) {
 
     var margin = { top: 10, right: 50, bottom: 50, left: 50 },
         width = window.innerWidth - margin.left - margin.right,
@@ -348,6 +348,23 @@ function drawSankey(graph) {
         .style("stroke-width", function (d) { return Math.max(1, d.dy); })
         .sort(function (a, b) { return b.dy - a.dy; });          // uncomment this
 
+    link
+        .append("title")
+        .attr("class", "nodes")
+        .text(function(d) { 
+            let s = d['source']['name']
+            let t = d['target']['name']
+
+            // console.log("s, t : ", s, ", ", t)
+            console.log(d)
+
+            let sd = arrData.map(a => {
+                                if((a['Created Date'] === s) && (a['Converted Date'] === t)) {
+                                    console.log(a)
+                                }
+                            })
+            // console.log(sd)
+         })
 
     // add in the nodes
     var node = svg.append("g")
@@ -364,6 +381,7 @@ function drawSankey(graph) {
     // add the rectangles for the nodes
     node
         .append("rect")
+        .attr("class", "nodes")
         .attr("height", function (d) { return d.dy; })
         .attr("width", sankey.nodeWidth())
         .style("fill", function (d) { return d.color = color(d.name.replace(/ .*/, "")); })
@@ -544,7 +562,7 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
     // drawSankey(testData)
     // drawSankey(leadNodes)
     // drawSankey(graph)
-    drawSankey(miniLeads)
+    drawSankey(miniLeads, responseData)
 
 
 
