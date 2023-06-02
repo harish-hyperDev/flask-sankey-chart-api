@@ -60,7 +60,7 @@ def send_data():
         if date['Oppt Close Date'] != "":
             opp_closed_date = datetime.datetime.strptime(date['Oppt Close Date'], "%d/%m/%Y").strftime("%Y/%m/%d")
         else:
-            opp_closed_date = "Interested"
+            opp_closed_date = "Not closed"
             
         date['Created Date'] = lead_created_date
         date['Converted Date'] = opp_created_date
