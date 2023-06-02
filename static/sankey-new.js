@@ -1,4 +1,4 @@
-let nodeValue = "10.0"
+let nodeValue = "15.0"
 
 d3.sankey = function () {
     var sankey = {},
@@ -432,14 +432,17 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
     let oppCreatedUniqueDates = responseData.map((o, i) => o['Converted Date']).filter(onlyUnique)
     let oppClosedUniqueDates = responseData.map((o, i) => o['Oppt Close Date']).filter(onlyUnique).filter(v => v != "")
     let leadStatus = responseData.map((o, i) => o["Lead Status"]).filter(onlyUnique).filter(v => v != "")
+    let oppStage = responseData.map((o, i) => o["Oppt Stage"]).filter(onlyUnique).filter(v => v != "")
 
-    let leadStartedToLeadStatus = getLinks(responseData, "Created Date", "Lead Status")     //.sort((a, b) => new Date(a.source) - new Date(b.source))
+    let leadStartedToLeadStatus = getLinks(responseData, "Created Date", "Lead Status") //.sort((a, b) => new Date(a.source) - new Date(b.source))
     let leadStatusToOppCreated = getLinks(responseData, "Lead Status", "Converted Date")
-    let oppCreatedToOppClosed = getLinks(responseData, "Converted Date", "Oppt Close Date")
+    let oppCreatedToOppStage = getLinks(responseData, "Converted Date", "Oppt Stage")
+    let oppCreatedToOppClosed = getLinks(responseData, "Oppt Stage", "Oppt Close Date")
 
     let leadNodes = {
         "links": [  ...leadStartedToLeadStatus,
                     ...leadStatusToOppCreated,
+                    ...oppCreatedToOppStage,
                     ...oppCreatedToOppClosed
         ].filter(v => v != null),
 
@@ -447,8 +450,8 @@ fetch('/get_data').then(res => res.json()).then(responseData => {
             ...getNodes(leadCreatedUniqueDates, "Created Date"),
             ...getNodes(oppCreatedUniqueDates, "Converted Date"),
             ...getNodes(oppClosedUniqueDates, "Oppt Close Date"),
-
-            ...getNodes(leadStatus, "Lead Status")
+            ...getNodes(leadStatus, "Lead Status"),
+            ...getNodes(oppStage, "Oppt Stage")
         ].map(k => k['name'])
             .filter(onlyUnique)
             .map(v => { return { "name": v } })
