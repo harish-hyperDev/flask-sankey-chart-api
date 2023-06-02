@@ -364,7 +364,9 @@ function drawSankey(graph, arrData) {
                                 }
                             }) */
             // console.log(sd)
-            return d.source.name + " → " + d.target.name + "\n" + "There is/are " + d.value / nodeValue + " record(s) in this link"
+            return (d.value / nodeValue) > 1 
+                    ? d.source.name + " → " + d.target.name + "\n" + "There are " + d.value / nodeValue + " records in this link"
+                    : d.source.name + " → " + d.target.name + "\n" + "There is " + d.value / nodeValue + " record in this link"
          })
 
     // add in the nodes
@@ -389,7 +391,11 @@ function drawSankey(graph, arrData) {
         .style("stroke", function (d) { return d3.rgb(d.color).darker(2); })
         // Add hover text
         .append("title")
-        .text(function (d) { return d.name + "\n" + "There is/are " + d.value / nodeValue + " record(s) in this node"; });
+        .text(function (d) { return (d.value / nodeValue) > 1 
+                                    ? d.name + "\n" + "There are " + d.value / nodeValue + " records in this node"
+                                    : d.name + "\n" + "There is " + d.value / nodeValue + " record in this node" 
+
+                                });
 
     // add in the title for the nodes
     node
