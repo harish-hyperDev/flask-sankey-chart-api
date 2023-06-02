@@ -414,9 +414,6 @@ const getLinks = (arr, source, target) => {
 }
 
 const getNodes = (arr, key) => {
-
-    // console.log("keyyyyy - ", key)
-
     if (key === "Converted Date")
         return arr.map(v => {  return { "name": v.replaceAll("/", "-") } })
     else if (key == "Oppt Close Date")
@@ -431,22 +428,27 @@ const getNodes = (arr, key) => {
 
 fetch('/get_data').then(res => res.json()).then(responseData => {
 
-
     let leadCreatedUniqueDates = responseData.map((o, i) => o['Created Date']).filter(onlyUnique)
     let oppCreatedUniqueDates = responseData.map((o, i) => o['Converted Date']).filter(onlyUnique)
     let oppClosedUniqueDates = responseData.map((o, i) => o['Oppt Close Date']).filter(onlyUnique).filter(v => v != "")
+    let leadStatus = responseData.map((o, i) => o["Lead Status"]).filter(onlyUnique).filter(v => v != "")
 
+    let leadStartedToLeadStatus = getLinks(responseData, "Created Date", "Lead Status")     //.sort((a, b) => new Date(a.source) - new Date(b.source))
+    let leadStatusToOppCreated = getLinks(responseData, "Lead Status", "Converted Date")
+    let oppCreatedToOppClosed = getLinks(responseData, "Converted Date", "Oppt Close Date")
 
     let leadNodes = {
-        "links": [
-            ...getLinks(responseData, "Created Date", "Converted Date"),
-            ...getLinks(responseData, "Converted Date", "Oppt Close Date")
+        "links": [  ...leadStartedToLeadStatus,
+                    ...leadStatusToOppCreated,
+                    ...oppCreatedToOppClosed
         ].filter(v => v != null),
 
         "nodes": [
             ...getNodes(leadCreatedUniqueDates, "Created Date"),
             ...getNodes(oppCreatedUniqueDates, "Converted Date"),
-            ...getNodes(oppClosedUniqueDates, "Oppt Close Date")
+            ...getNodes(oppClosedUniqueDates, "Oppt Close Date"),
+
+            ...getNodes(leadStatus, "Lead Status")
         ].map(k => k['name'])
             .filter(onlyUnique)
             .map(v => { return { "name": v } })
